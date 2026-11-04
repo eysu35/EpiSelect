@@ -1,0 +1,20 @@
+defaults:
+  - tasks_sampler_cfg: commonpile_tasks
+_target_: src.dataloader.adaptive_loader.AdaptiveLoader
+_recursive_: false
+policy_type: episelect
+
+data_dir: null
+ignore_steps: 1000       # skip these initial steps when fitting the scaling law
+start_step: 1000         # first step that samples from the fitted distribution
+update_interval: 1000    # refit every this many steps
+use_same_step_size: false
+use_prior: false         
+use_credit_assignment: false
+do_global_avg: true
+ema: 0.9
+tau: 1.0
+fit_freq: 20
+window_length: 101       # savgol filter window over the noisy per-step loss
+polyorder: 3
+diag_gamma: false        # true: gamma fixed to the identity (per-domain law), ablation

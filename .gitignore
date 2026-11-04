@@ -1,0 +1,34 @@
+# Credentials — never commit
+.wandbkey
+.gcloud-sa.json
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Runs and artifacts
+outputs/
+wandb/
+logs/
+*.out
+eval_results.json
+
+# Local data and checkpoints
+data/
+*_tfds/
+checkpoints/
+.nfs*
+
+# Sweep log, results, cluster-specific eval scripts
+progress.md
+eval_results/
+scripts/eval.slurm
+scripts/launch_eval.sh
+scripts/pull_checkpoints.sh

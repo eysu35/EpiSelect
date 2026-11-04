@@ -1,0 +1,5 @@
+_target_: src.dataloader.commonpile_loader.CommonPileBalanced
+_recursive_: false
+
+data_dir: null
+balancing_strategy: empirical  # sample domains proportionally to their train token count

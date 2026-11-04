@@ -1,0 +1,72 @@
+defaults:
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+  - _self_
+
+# Checkpoint layout: <ckpt_base>/<size>/<method>/seed<N> (scripts/tpu_queue.sh). Each entry is evaluated
+# once per seed; results are keyed <label>_seed<N>. Drop `seeds` to evaluate a single unseeded path.
+ckpt_base: /path/to/checkpoints
+size: 124M
+seeds: [0, 1, 2, 3, 4]        # 1.3B: [0, 1, 2]
+labels: null                  # keep only these labels, e.g. labels=[ADO]
+runs:
+  - label: Natural
+    path: ${ckpt_base}/${size}/Natural
+    seeds: ${seeds}
+  - label: ADO
+    path: ${ckpt_base}/${size}/ADO
+    seeds: ${seeds}
+  - label: EpiSelect
+    path: ${ckpt_base}/${size}/EpiSelect
+    seeds: ${seeds}
+  - label: ADO_noprior        # 124M ablations (scripts/tpu_queue.sh ABLATIONS_124M); missing rundirs are skipped
+    path: ${ckpt_base}/${size}/ADO_noprior
+    seeds: ${seeds}
+  - label: EpiSelect_diag
+    path: ${ckpt_base}/${size}/EpiSelect_diag
+    seeds: ${seeds}
+
+evals:
+  - val          # Common Pile held-out split (train[:1%])
+  - c4           # out-of-distribution token streams
+  - slim_pajama
+  - fine_web
+  - harness
+
+harness_tasks:
+  - arc_challenge
+  - arc_easy
+  - bbq
+  - boolq
+  - commonsense_qa
+  - hellaswag
+  - lambada_openai
+  - logiqa2
+  - mc_taco
+  - openbookqa
+  - piqa
+  - sciq
+  - winogrande
+
+# all 13 tasks are evaluated; the headline average is paper10 (Table 1's columns, ARC = mean of arc_challenge and arc_easy),
+# ado7 shown next to it (scripts/aggregate_eval.py adds one column per merged task and per group; `all` is every task above)
+harness_merged:
+  arc: [arc_challenge, arc_easy]
+harness_groups:
+  paper10: [arc, bbq, commonsense_qa, hellaswag, lambada_openai, logiqa2, openbookqa, piqa, sciq, winogrande]
+  ado7: [hellaswag, winogrande, piqa, arc_easy, sciq, logiqa2, lambada_openai]
+
+batch_size: 32          # harness batch size
+val_batch_size: 32      # val chunk size; null = the run's batch size (needs a TPU slice)
+ood_batch_size: 8       # c4 / slim_pajama / fine_web batch size
+harness_limit: null     # cap examples per harness task, null = all
+
+# local copies (scripts/build_*.slurm) or the bucket paths gs://commonpile-tfds/{commonpile_tfds,ood_token_cache}
+data_dir: /path/to/commonpile_tfds
+ood_cache_dir: /path/to/ood_token_cache
+output: eval_results_${size}.json
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .

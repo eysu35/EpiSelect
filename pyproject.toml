@@ -1,0 +1,29 @@
+[project]
+name = "episelect"
+version = "0.1.0"
+description = "Epiplexity-guided data selection for out-of-distribution generalization"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "datasets==2.19.2",
+    "equinox==0.13.6",
+    "gcsfs==2023.12.2.post1",
+    "hydra-core>=1.3.2",
+    "jaxopt==0.8.3",
+    "lm-eval==0.4.11",
+    "optax==0.1.7",
+    "orbax-checkpoint==0.5.20",
+    "scipy>=1.11",
+    "tensorflow>=2.21.0",
+    "tensorflow-datasets>=4.9.9",
+    "tqdm>=4.67.3",
+    "transformers>=5.7.0",
+    "wandb>=0.26.1",
+]
+
+[project.optional-dependencies]
+tpu = ["jax[tpu]>=0.6.2"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+include = ["src*"]
